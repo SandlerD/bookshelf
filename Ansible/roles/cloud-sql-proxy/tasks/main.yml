@@ -1,0 +1,29 @@
+---
+
+- name: install cloud-sql-proxy
+  ansible.builtin.get_url:
+    url: https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
+    dest: /usr/local/bin/cloud_sql_proxy
+    mode: '0755'
+
+- name: cloud-sql-proxy user
+  ansible.builtin.user:
+    name: "{{ SQL_USER }}"
+    shell: /usr/bin/false
+    system: true
+   
+- name: configure cloud-sql-proxy service
+  ansible.builtin.template:
+    src: cloud-sql-proxy.service.j2
+    dest: /etc/systemd/system/cloud-sql-proxy.service
+    owner: "{{ SQL_USER }}"
+    group: "{{ SQL_USER }}"
+    mode: 0644
+  notify: restart cloud-sql-proxy
+
+- name: start service
+  ansible.builtin.systemd:
+    name: cloud-sql-proxy.service
+    state: started
+    daemon_reload: true
+    enabled: true

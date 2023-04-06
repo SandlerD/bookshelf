@@ -1,0 +1,29 @@
+---
+
+- name: purge man-db
+  ansible.builtin.apt:
+    name: man-db
+    state: absent
+    purge: true
+
+- name: install programs
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+   - wget
+   - supervisor
+   - python3-dev
+   - build-essential
+   - python3-dev
+   - libffi-dev
+   - libssl-dev
+
+- name: upgrade pip + virtualenv
+  ansible.builtin.pip: 
+    name: 
+      - pip
+      - virtualenv
+    state: latest
+

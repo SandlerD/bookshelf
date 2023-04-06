@@ -1,0 +1,11 @@
+---
+
+- name: install fluentd
+  ansible.builtin.get_url:
+    url: https://storage.googleapis.com/signals-agents/logging/google-fluentd-install.sh
+    dest: /usr/local/bin/google-fluentd-install.sh
+    mode: '0755'
+
+
+- name: run a fluentd-install script
+  ansible.builtin.script: /usr/local/bin/google-fluentd-install.sh

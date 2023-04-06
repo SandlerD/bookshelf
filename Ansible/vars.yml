@@ -1,0 +1,4 @@
+---
+
+SQL_USER: "cloudsqlproxy"
+APP_USER: "pythonapp"

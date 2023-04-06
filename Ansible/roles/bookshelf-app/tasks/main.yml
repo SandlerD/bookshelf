@@ -1,0 +1,41 @@
+---
+
+- name: clone repo
+  ansible.builtin.git:
+    repo: 'https://source.developers.google.com/p/{{ PROJECTID }}/r/bookshelf'
+    dest: /opt/app
+
+- name: copy config.py service file
+  ansible.builtin.template:
+    src: config.py.j2
+    dest: /opt/app/gce/config.py
+
+- name: install requirements into virtualenv
+  ansible.builtin.pip:
+    requirements: /opt/app/gce/requirements.txt
+    extra_args: --prefer-binary
+    virtualenv: /opt/app/gce/env
+
+- name: initialize mysql db
+  ansible.builtin.shell: /opt/app/gce/env/bin/python3 /opt/app/gce/bookshelf/model_cloudsql.py
+
+- name: pythonapp user
+  ansible.builtin.user:
+    name: "{{ APP_USER }}"
+    shell: /usr/bin/false
+    system: true
+
+- name: pythonapp directory
+  ansible.builtin.file:
+    path: /opt/app
+    state: directory
+    recurse: true
+    owner: "{{ APP_USER }}"
+    group: "{{ APP_USER }}"
+
+- name: copy supervisor configuration file
+  ansible.builtin.template:
+    src: python-app.j2
+    dest: /etc/supervisor/conf.d/python-app.conf
+  notify: supervisor
+

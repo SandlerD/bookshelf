@@ -1,0 +1,7 @@
+---
+
+- name: supervisor
+  ansible.builtin.systemd:
+    name: supervisor.service
+    state: restarted
+    enabled: true
